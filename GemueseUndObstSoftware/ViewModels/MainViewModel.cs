@@ -9,7 +9,6 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Storage = GemueseUndObstSoftware.Models.Storage;
 
 namespace GemueseUndObstSoftware.ViewModels
 {
@@ -17,16 +16,32 @@ namespace GemueseUndObstSoftware.ViewModels
     {
         private static readonly string DataLocation = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "GemueseUndObstApplicationData");
         private static readonly string ArticleDataLocation = Path.Combine(DataLocation, "Articles");
+
+        private Storage _storage;
+        public Storage Storage
+        {
+            get { return _storage; }
+            set { SetProperty(ref _storage, value); }
+        }
+
         public MainViewModel()
         {
+            InitializeCommands();
             Load();
         }
         public RelayCommand<object> saveCommand;
         public RelayCommand<object> loadCommand;
+        public RelayCommand<object> newArticleCommand;
         public void InitializeCommands()
         {
             saveCommand = new RelayCommand<object>(c => Save());
             loadCommand = new RelayCommand<object>(c => Load());
+            newArticleCommand = new RelayCommand<object>(c => CreateNewArticle());
+        }
+
+        public void CreateNewArticle()
+        {
+
         }
 
         #region Save and Load
@@ -53,13 +68,13 @@ namespace GemueseUndObstSoftware.ViewModels
 
         public void Load()
         {
-            Regex filter = new Regex(@"^(?<ArticleNumber>[^î]+)[î](?<ArticleDescription>[^î]+)[î](?<Price>[^î]+)[î](?<StorageQuantity>[^î]+)[î](?<QuantityUnit>[^î]+)$");
+            Regex filter = new Regex(@"^(?<ArticleNumber>[^î]+)[î](?<ArticleName>[^î]+)[î](?<ArticleDescription>[^î]+)[î](?<Price>[^î]+)[î](?<StorageQuantity>[^î]+)[î](?<QuantityUnit>[^î]+)$");
             string[] articleFiles = Directory.GetFiles(ArticleDataLocation);
             foreach (string articleFile in articleFiles)
             {
                 Article loadedArticle = new Article();
                 
-                if (int.TryParse(articleFile.Substring(articleFile.LastIndexOf('\\')), out int articleNumber)){
+                if (int.TryParse(articleFile.Substring(articleFile.LastIndexOf('\\'), articleFile.LastIndexOf('.')-1), out int articleNumber)){
                     string fileContent = File.ReadAllText(articleFile).Replace("\\r\\n", "");
                     Match filterResult = filter.Match(fileContent);
                     foreach(var property in typeof(Article).GetProperties())

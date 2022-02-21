@@ -16,6 +16,12 @@ namespace GemueseUndObstSoftware.Models
             get { return _articleNumber; }
             set { SetProperty(ref _articleNumber, value); }
         }
+        private string _articleName;
+        public string ArticleName 
+        { 
+            get { return _articleName; }
+            set { SetProperty(ref _articleName, value); }
+        }
         private string _articleDescription;
         public string ArticleDescription
         {
@@ -46,7 +52,7 @@ namespace GemueseUndObstSoftware.Models
         }
         public override string ToString()
         {
-            return $"{ArticleNumber.ToString()}î{ArticleDescription}î{Price.ToString()}î{StorageQuantity.ToString()}î{QuantityUnit.ToString()}";
+            return $"{ArticleNumber.ToString()}î{ArticleName}î{ArticleDescription}î{Price.ToString()}î{StorageQuantity.ToString()}î{QuantityUnit.ToString()}";
         }
     }
 }

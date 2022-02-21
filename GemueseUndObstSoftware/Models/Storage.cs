@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 
 namespace GemueseUndObstSoftware.Models
 {
-    public static class Storage
+    public class Storage
     {
-        public static ObservableCollection<Article> Articles { get; set; }
-        public static void BookOut(decimal quantity, int articleNumber)
+        public ObservableCollection<Article> Articles { get; set; }
+        public void BookOut(decimal quantity, int articleNumber)
         {
             try
             {
@@ -24,7 +24,7 @@ namespace GemueseUndObstSoftware.Models
                 throw e;
             }
         }
-        public static void BookIn(decimal quantity, int articleNumber)
+        public void BookIn(decimal quantity, int articleNumber)
         {
             try
             {
@@ -36,7 +36,7 @@ namespace GemueseUndObstSoftware.Models
                 throw e;
             }
         }
-        public static void CreateArticle(int articleNumber, string articleDesctiption, QuantityUnit quantityUnit, decimal price)
+        public void CreateArticle(int articleNumber, string articleDesctiption, QuantityUnit quantityUnit, decimal price)
         {
             try
             {
@@ -62,7 +62,7 @@ namespace GemueseUndObstSoftware.Models
                 throw e;
             }
         }
-        public static void ChangePrice(int articleNumber, decimal newPrice)
+        public void ChangePrice(int articleNumber, decimal newPrice)
         {
             try
             {
@@ -74,7 +74,7 @@ namespace GemueseUndObstSoftware.Models
                 throw e;
             }
         }
-        public static void DeleteArticle(int articleNumber)
+        public void DeleteArticle(int articleNumber)
         {
             try
             {
@@ -86,7 +86,7 @@ namespace GemueseUndObstSoftware.Models
                 throw e;
             }
         }
-        public static decimal GetAmountOfArticle(int articleNumber)
+        public decimal GetAmountOfArticle(int articleNumber)
         {
             try
             {
