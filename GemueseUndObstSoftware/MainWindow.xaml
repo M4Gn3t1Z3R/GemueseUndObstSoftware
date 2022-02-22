@@ -18,20 +18,24 @@
             </Style.Triggers>
         </Style>
         <DataTemplate x:Key="ArticleListDisplay">
-            <RadioButton IsChecked="{Binding SelectedForAction}" HorizontalContentAlignment="Stretch" Height="150" d:DataContext="{d:DesignInstance Type=models:Article, IsDesignTimeCreatable=False}">
+            <RadioButton IsChecked="{Binding SelectedForAction}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center" d:DataContext="{d:DesignInstance Type=models:Article, IsDesignTimeCreatable=False}">
                 <Grid>
                     <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="30"/>
-                        <RowDefinition/>
-
+                        <RowDefinition Height="30"/>
                     </Grid.RowDefinitions>
                     <Label Grid.Row="0" Grid.Column="0" Content="{Binding ArticleNumber}"/>
-                    <Label Grid.Row="0" Grid.Column="1" Content="{Binding ArticleName}"/>
-                    <Label Grid.Row="1" Grid.Column="0" Content="{Binding ArticleDescription}"/>
+                    <Label Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Content="{Binding ArticleDescription}" Margin="25,0,0,0"/>
+                    <Label Grid.Row="0" Grid.Column="1" Content="{Binding Price}" HorizontalAlignment="Right"/>
+                    <Label Grid.Row="0" Grid.Column="2" Content="€" BorderThickness="0,0,0,2" BorderBrush="Black" Width="25" HorizontalAlignment="Left"/>
+                    <Label Grid.Row="1" Grid.Column="1" Content="{Binding StorageQuantity}" HorizontalContentAlignment="Right"/>
+                    <Label Grid.Row="1" Grid.Column="2" Content="{Binding QuantityUnit}"/>
+                    
                 </Grid>
             </RadioButton>
             

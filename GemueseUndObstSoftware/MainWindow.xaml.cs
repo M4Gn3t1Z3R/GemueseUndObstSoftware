@@ -77,6 +77,7 @@ namespace GemueseUndObstSoftware
                             ArticleCreationQuantityUnit.Focus();
                             break;
                         case var value when value == ArticleCreationQuantityUnit.Name:
+
                             break;
                     }
                     e.Handled = true;
