@@ -70,13 +70,25 @@ namespace GemueseUndObstSoftware.ViewModels
                 SetProperty(ref _searchQuery, value);
                 if (string.IsNullOrWhiteSpace(SearchQuery))
                 {
-                    FilteredArticles = Storage.Articles;
+                    FilteredArticles = new ObservableCollection<Article>(Storage.Articles.OrderBy(a => a.ArticleNumber));
                 }
                 else
                 {
                     FilteredArticles = new ObservableCollection<Article>(Storage.Articles.Where(a => typeof(Article).GetProperties().Where(p => p.GetValue(a).ToString().Contains(SearchQuery)).Any()).OrderBy(a => a.ArticleNumber));
+                    if(!FilteredArticles.Where(a => a.SelectedForAction).Any() && Storage.Articles.Where(a => a.SelectedForAction).Any())
+                    {
+                        //we do this to prevent editing articles that are not currently visible
+                        Storage.Articles.Where(a => a.SelectedForAction).First().SelectedForAction = false;
+                    }
                 }
             }
+        }
+
+        private decimal _newPrice;
+        public decimal NewPrice
+        {
+            get { return _newPrice; }
+            set { SetProperty(ref _newPrice, value); }
         }
 
         public MainViewModel()
@@ -92,12 +104,14 @@ namespace GemueseUndObstSoftware.ViewModels
         public RelayCommand<object> BookOutCommand { get; set; }
         public RelayCommand<object> SaveArticleCommand { get; set; }
         public RelayCommand<object> DeleteArticleCommand { get; set; }
+        public RelayCommand<object> ChangePriceCommand { get; set; }
         public void InitializeCommands()
         {
             SaveCommand = new RelayCommand<object>(c => SaveAll());
             LoadCommand = new RelayCommand<object>(c => Load());
             BookInCommand = new RelayCommand<object>((object par) => { BookInExecute(Storage.Articles.Where(a => a.SelectedForAction).First()); }, c => Storage.Articles.Where(a => a.SelectedForAction).Any());
             BookOutCommand = new RelayCommand<object>((object par) => { BookOutExecute(Storage.Articles.Where(a => a.SelectedForAction).First()); }, c => Storage.Articles.Where(a => a.SelectedForAction).Any());
+            ChangePriceCommand = new RelayCommand<object>((object par) => { ChangePriceExecute(); }, c => Storage.Articles.Where(a => a.SelectedForAction).Any());
             SaveArticleCommand = new RelayCommand<object>((object par) => { CreateNewArticleExecute(); }, c => Article.IsValid);
             DeleteArticleCommand = new RelayCommand<object>((object par) => { DeleteArticleExecute(); }, c => Storage.Articles.Where(a => a.SelectedForAction).Any());
         }
@@ -110,8 +124,17 @@ namespace GemueseUndObstSoftware.ViewModels
 
         private void BookOutExecute(Article article)
         {
-            Storage.BookOut(Quantity, article.ArticleNumber);
-            Quantity = 0m;
+            if(article.StorageQuantity >= Quantity || MessageBox.Show("Not enough in stock, book the remaining quantity instead?", "Warning", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+            {
+                Storage.BookOut(Quantity, article.ArticleNumber);
+                Quantity = 0m;
+            }
+        }
+
+        private void ChangePriceExecute()
+        {
+            Article article = Storage.Articles.Where(a => a.SelectedForAction).First();
+            Storage.ChangePrice(article.ArticleNumber, NewPrice);
         }
 
         private void CreateNewArticleExecute()
@@ -143,15 +166,28 @@ namespace GemueseUndObstSoftware.ViewModels
         }
 
         #region Save and Load
-        public void SaveAll()
+        private void SaveAll()
         {
+            List<Article> saveIssueList = new List<Article>();
             foreach(Article article in Storage.Articles)
             {
-                SaveArticle(article);
+                if (!SaveArticle(article))
+                {
+                    saveIssueList.Add(article);
+                }
+            }
+            string errorList = "";
+            foreach(Article article in saveIssueList)
+            {
+                errorList += (string.IsNullOrWhiteSpace(errorList) ? "" : "; " ) + article.ArticleNumber.ToString();
+            }
+            if (!string.IsNullOrWhiteSpace(errorList))
+            {
+                MessageBox.Show("Errors occurred while trying to save the articles " + errorList, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 
-        public bool SaveArticle(Article article)
+        private bool SaveArticle(Article article)
         {
             try
             {

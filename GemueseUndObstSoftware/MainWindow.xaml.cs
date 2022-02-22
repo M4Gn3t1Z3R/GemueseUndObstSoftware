@@ -34,6 +34,7 @@ namespace GemueseUndObstSoftware
                 var x = sender as Control;
                 if(e.Key == Key.Up)
                 {
+                    e.Handled = true;
                     switch (x.Name)
                     {
                         case var value when value == BookingQuantityTextBox.Name:
@@ -54,11 +55,14 @@ namespace GemueseUndObstSoftware
                         case var value when value == ArticleCreationQuantityUnit.Name:
                             ArticleCreationPrice.Focus();
                             break;
+                        default:
+                            e.Handled = false;
+                            break;
                     }
-                    e.Handled = true;
                 }
                 else if(e.Key == Key.Down)
                 {
+                    e.Handled = true;
                     switch (x.Name)
                     {
                         case var value when value == BookingQuantityTextBox.Name:
@@ -79,11 +83,14 @@ namespace GemueseUndObstSoftware
                         case var value when value == ArticleCreationQuantityUnit.Name:
 
                             break;
+                        default:
+                            e.Handled = false;
+                            break;
                     }
-                    e.Handled = true;
                 }
                 else if(e.Key == Key.Enter)
                 {
+                    e.Handled = true;
                     switch (x.Name)
                     {
                         case var value when value == ArticleCreationCheckBox.Name:
@@ -119,8 +126,17 @@ namespace GemueseUndObstSoftware
                                 ArticleCreationNumber.Focus();
                             }
                             break;
+                        case var value when value == NewPriceTextBox.Name:
+                            BookingQuantityTextBox.Focus();
+                            if (ChangePriceButton.Command.CanExecute(null))
+                            {
+                                ChangePriceButton.Command.Execute(null);
+                            }
+                            break;
+                        default:
+                            e.Handled = false;
+                            break;
                     }
-                    e.Handled = true;
                 }
             }
         }

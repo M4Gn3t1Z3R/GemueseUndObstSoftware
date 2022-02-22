@@ -55,7 +55,7 @@ namespace GemueseUndObstSoftware.Models
                 throw e;
             }
         }
-        public void CreateArticle(Article article)
+        public void CreateArticle(Article article)//overload for creating new articles from an object
         {
             CreateArticle(article.ArticleNumber, article.ArticleDescription, article.QuantityUnit, article.Price);
         }
