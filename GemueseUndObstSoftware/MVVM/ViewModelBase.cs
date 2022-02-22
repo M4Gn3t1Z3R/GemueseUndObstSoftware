@@ -23,6 +23,7 @@ namespace GemueseUndObstSoftware.MVVM
             }
             else
             {
+                oldValue = newValue;
                 this.OnPropertyChanged(propertyName);
                 return true;
             }

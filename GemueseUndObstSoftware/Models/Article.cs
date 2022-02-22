@@ -16,12 +16,6 @@ namespace GemueseUndObstSoftware.Models
             get { return _articleNumber; }
             set { SetProperty(ref _articleNumber, value); }
         }
-        private string _articleName;
-        public string ArticleName 
-        { 
-            get { return _articleName; }
-            set { SetProperty(ref _articleName, value); }
-        }
         private string _articleDescription;
         public string ArticleDescription
         {
@@ -46,13 +40,25 @@ namespace GemueseUndObstSoftware.Models
             get { return _quantityUnit; }
             set { SetProperty(ref _quantityUnit, value); }
         }
+        private bool _selectedForAction;
+        public bool SelectedForAction
+        {
+            get { return _selectedForAction; }
+            set { SetProperty(ref _selectedForAction, value); }
+        }
+
+        public bool IsValid
+        {
+            get { return !string.IsNullOrWhiteSpace(ArticleDescription) && Price != 0 && ArticleNumber >= 0; }
+        }
         public Article()
         {
+            SelectedForAction = false;
 
         }
         public override string ToString()
         {
-            return $"{ArticleNumber.ToString()}î{ArticleName}î{ArticleDescription}î{Price.ToString()}î{StorageQuantity.ToString()}î{QuantityUnit.ToString()}";
+            return $"{ArticleNumber.ToString()}î{ArticleDescription}î{Price.ToString()}î{StorageQuantity.ToString()}î{QuantityUnit.ToString()}";
         }
     }
 }

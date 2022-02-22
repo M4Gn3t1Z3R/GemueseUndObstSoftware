@@ -9,9 +9,20 @@ using System.Threading.Tasks;
 
 namespace GemueseUndObstSoftware.Models
 {
-    public class Storage
+    public class Storage : GemueseUndObstSoftware.MVVM.ViewModelBase
     {
-        public ObservableCollection<Article> Articles { get; set; }
+        private ObservableCollection<Article> _articles = new ObservableCollection<Article>();
+        public ObservableCollection<Article> Articles
+        {
+            get { return _articles; }
+            set { SetProperty(ref _articles, value); }
+        }
+
+        public Storage()
+        {
+
+        }
+
         public void BookOut(decimal quantity, int articleNumber)
         {
             try
@@ -35,6 +46,10 @@ namespace GemueseUndObstSoftware.Models
                 //the result was != 1
                 throw e;
             }
+        }
+        public void CreateArticle(Article article)
+        {
+            CreateArticle(article.ArticleNumber, article.ArticleDescription, article.QuantityUnit, article.Price);
         }
         public void CreateArticle(int articleNumber, string articleDesctiption, QuantityUnit quantityUnit, decimal price)
         {

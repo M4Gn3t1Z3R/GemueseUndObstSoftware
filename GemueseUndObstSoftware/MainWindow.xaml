@@ -9,20 +9,32 @@
         mc:Ignorable="d"
         Title="Storage Software" Height="450" Width="800" d:DataContext="{d:DesignInstance Type=viewModel:MainViewModel, IsDesignTimeCreatable=True}">
     <Window.Resources>
+        <Style x:Key="ArticleCreationIsVisible">
+            <Setter Property="Grid.Visibility" Value="Collapsed"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsArticleCreationEnabled}" Value="True">
+                    <Setter Property="Grid.Visibility" Value="Visible"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
         <DataTemplate x:Key="ArticleListDisplay">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="20"/>
-                    <RowDefinition/>
-                    
-                </Grid.RowDefinitions>
-                <Label Grid.Row="0" Grid.Column="0" Content="{Binding ArticleNumber}"/>
-                <Label Grid.Row="0" Grid.Column="1" Content="{Binding ArticleName}"/>
-            </Grid>
+            <RadioButton IsChecked="{Binding SelectedForAction}" HorizontalContentAlignment="Stretch" Height="150" d:DataContext="{d:DesignInstance Type=models:Article, IsDesignTimeCreatable=False}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition/>
+
+                    </Grid.RowDefinitions>
+                    <Label Grid.Row="0" Grid.Column="0" Content="{Binding ArticleNumber}"/>
+                    <Label Grid.Row="0" Grid.Column="1" Content="{Binding ArticleName}"/>
+                    <Label Grid.Row="1" Grid.Column="0" Content="{Binding ArticleDescription}"/>
+                </Grid>
+            </RadioButton>
+            
         </DataTemplate>
     </Window.Resources>
     <Grid>
@@ -31,10 +43,39 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
             <RowDefinition/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <Button Grid.Column="1" Content="New Article" HorizontalAlignment="Left" VerticalAlignment="Top" Height="25" Width="100"/>
-        <ListView Grid.RowSpan="2" ItemTemplate="{DynamicResource ResourceKey=ArticleListDisplay}" ItemsSource="{Binding Articles}" d:DataContext="{d:DesignInstance Type=models:Storage, IsDesignTimeCreatable=False}"/>
+        <Button Grid.Row="1" Grid.Column="1" Content="Save All" HorizontalAlignment="Left" VerticalAlignment="Top" Height="25" Width="100" Margin="120,75,0,0" Command="{Binding SaveCommand}"/>
+        <Label Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" Height="25" Width="100" Margin="0,0,0,0" Content="Quantity"/>
+        <TextBox x:Name="BookingQuantityTextBox" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" Height="25" Width="100" BorderBrush="Black" Margin="0,25,0,0" Text="{Binding Quantity}" PreviewKeyDown="Focushandling_KeyDown"/>
+        <Button Grid.Row="1" Grid.Column="1" Content="Book in" HorizontalAlignment="Left" VerticalAlignment="Top" Height="25" Width="100" Margin="0,50,0,0" Command="{Binding BookInCommand}"/>
+        <Button Grid.Row="1" Grid.Column="1" Content="Book out" HorizontalAlignment="Left" VerticalAlignment="Top" Height="25" Width="100" Margin="0,75,0,0" Command="{Binding BookOutCommand}"/>
+        <CheckBox x:Name="ArticleCreationCheckBox" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="5,0,0,5" Content="Create Articles" IsChecked="{Binding IsArticleCreationEnabled}" PreviewKeyDown="Focushandling_KeyDown"/>
+        <ListView Grid.Row="1" Grid.RowSpan="2" ItemTemplate="{DynamicResource ResourceKey=ArticleListDisplay}" ItemsSource="{Binding Storage.Articles}" d:DataContext="{d:DesignInstance Type=models:Storage, IsDesignTimeCreatable=False}" HorizontalContentAlignment="Stretch"/>
+        <Grid Grid.Row="2" Grid.Column="1" Style="{DynamicResource ResourceKey=ArticleCreationIsVisible}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="120"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="30"/>
+            </Grid.RowDefinitions>
+            <Label Grid.Row="0" Grid.Column="0" Content="Articlenumber"/>
+            <TextBox x:Name="ArticleCreationNumber" Grid.Row="0" Grid.Column="1" Text="{Binding Article.ArticleNumber, UpdateSourceTrigger=PropertyChanged}" PreviewKeyDown="Focushandling_KeyDown"/>
+            <Label Grid.Row="1" Grid.Column="0" Content="Articledescription"/>
+            <TextBox x:Name="ArticleCreationDescription" Grid.Row="1" Grid.Column="1" Text="{Binding Article.ArticleDescription, UpdateSourceTrigger=PropertyChanged}" PreviewKeyDown="Focushandling_KeyDown"/>
+            <Label Grid.Row="2" Grid.Column="0" Content="Price"/>
+            <TextBox x:Name="ArticleCreationPrice" Grid.Row="2" Grid.Column="1" Text="{Binding Article.Price, UpdateSourceTrigger=PropertyChanged}" PreviewKeyDown="Focushandling_KeyDown"/>
+            <Label Grid.Row="3" Grid.Column="0" Content="Quantityunit"/>
+            <ComboBox Name="ArticleCreationQuantityUnit" Grid.Row="3" Grid.Column="1" ItemsSource="{Binding QuantityUnits}" SelectedItem="{Binding Article.QuantityUnit}" PreviewKeyDown="Focushandling_KeyDown"/>
+            <Button x:Name="ArticleCreationSubmitButton" Grid.Row="5" Grid.Column="0" Command="{Binding SaveArticleCommand}" Content="Create Article"/>
+        </Grid>
     </Grid>
 </Window>
