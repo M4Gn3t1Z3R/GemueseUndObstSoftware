@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace GemueseUndObstSoftware.ViewModels
 {
@@ -65,13 +66,15 @@ namespace GemueseUndObstSoftware.ViewModels
         public RelayCommand<object> BookInCommand { get; set; }
         public RelayCommand<object> BookOutCommand { get; set; }
         public RelayCommand<object> SaveArticleCommand { get; set; }
+        public RelayCommand<object> DeleteArticleCommand { get; set; }
         public void InitializeCommands()
         {
-            SaveCommand = new RelayCommand<object>(c => Save());
+            SaveCommand = new RelayCommand<object>(c => SaveAll());
             LoadCommand = new RelayCommand<object>(c => Load());
-            BookInCommand = new RelayCommand<object>((object par) => { BookInExecute(Storage.Articles.Where(a => a.SelectedForAction).First()); }, c => Storage.Articles.Where(a => a.SelectedForAction).Count() == 1);
-            BookOutCommand = new RelayCommand<object>((object par) => { BookOutExecute(Storage.Articles.Where(a => a.SelectedForAction).First()); }, c => Storage.Articles.Where(a => a.SelectedForAction).Count() == 1);
+            BookInCommand = new RelayCommand<object>((object par) => { BookInExecute(Storage.Articles.Where(a => a.SelectedForAction).First()); }, c => Storage.Articles.Where(a => a.SelectedForAction).Any());
+            BookOutCommand = new RelayCommand<object>((object par) => { BookOutExecute(Storage.Articles.Where(a => a.SelectedForAction).First()); }, c => Storage.Articles.Where(a => a.SelectedForAction).Any());
             SaveArticleCommand = new RelayCommand<object>((object par) => { CreateNewArticleExecute(); }, c => Article.IsValid);
+            DeleteArticleCommand = new RelayCommand<object>((object par) => { DeleteArticleExecute(); }, c => Storage.Articles.Where(a => a.SelectedForAction).Any());
         }
 
         private void BookInExecute(Article article)
@@ -88,12 +91,30 @@ namespace GemueseUndObstSoftware.ViewModels
 
         private void CreateNewArticleExecute()
         {
+            if(Article.ArticleNumber <= 0 || Storage.Articles.Where(a => a.ArticleNumber == Article.ArticleNumber).Any())
+            {
+                //when we create a new article and the chosen articlenumber is already taken, we generate a new one
+                for(int i = (Article.ArticleNumber > 0 ? Article.ArticleNumber : 1); i< int.MaxValue; i++)
+                {
+                    if(!Storage.Articles.Where(a => a.ArticleNumber == i).Any())
+                    {
+                        Article.ArticleNumber = i;
+                        break;
+                    }
+                }
+            }
             Storage.CreateArticle(Article);
             Article = new Article();
         }
 
+        private void DeleteArticleExecute()
+        {
+            if(MessageBox.Show("Are you sure you want to delete this article?", "Warning", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+                Storage.DeleteArticle(Storage.Articles.Where(a => a.SelectedForAction).First().ArticleNumber);
+        }
+
         #region Save and Load
-        public void Save()
+        public void SaveAll()
         {
             foreach(Article article in Storage.Articles)
             {
@@ -119,15 +140,15 @@ namespace GemueseUndObstSoftware.ViewModels
             if (Directory.Exists(ArticleDataLocation))
             {
                 Storage = new Storage();
-                Regex filter = new Regex(@"^(?<ArticleNumber>[^î]+)[î](?<ArticleName>[^î]*)[î](?<ArticleDescription>[^î]+)[î](?<Price>[^î]+)[î](?<StorageQuantity>[^î]+)[î](?<QuantityUnit>[^î]+)$");
+                Regex filter = new Regex(@"^(?<ArticleNumber>[^î]+)[î](?<ArticleDescription>[^î]+)[î](?<Price>[^î]+)[î](?<StorageQuantity>[^î]+)[î](?<QuantityUnit>[^î]+)$");
                 string[] articleFiles = Directory.GetFiles(ArticleDataLocation);
                 foreach (string articleFile in articleFiles)
                 {
                     Article loadedArticle = new Article();
 
-                    if (int.TryParse(articleFile.Substring(articleFile.LastIndexOf('\\'), articleFile.LastIndexOf('.') - 1), out int articleNumber))
+                    if (int.TryParse(articleFile.Substring(articleFile.LastIndexOf('\\')+1, articleFile.LastIndexOf('.') - articleFile.LastIndexOf('\\') -1), out int articleNumber))
                     {
-                        string fileContent = File.ReadAllText(articleFile).Replace("\\r\\n", "");
+                        string fileContent = File.ReadAllText(articleFile, Encoding.GetEncoding(1252)).Replace("\\r\\n", "");
                         Match filterResult = filter.Match(fileContent);
                         foreach (var property in typeof(Article).GetProperties())
                         {
@@ -139,7 +160,7 @@ namespace GemueseUndObstSoftware.ViewModels
                                 }
                                 else
                                 {
-                                    switch (property.GetType())
+                                    switch (property.PropertyType)
                                     {
                                         case var value when value == typeof(decimal):
                                             property.SetValue(loadedArticle, decimal.Parse(filterResult.Groups[property.Name].Value));

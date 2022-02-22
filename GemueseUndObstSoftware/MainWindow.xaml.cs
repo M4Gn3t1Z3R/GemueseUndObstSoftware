@@ -62,7 +62,7 @@ namespace GemueseUndObstSoftware
                     switch (x.Name)
                     {
                         case var value when value == BookingQuantityTextBox.Name:
-                            ArticleCreationNumber.Focus();
+                            ArticleCreationCheckBox.Focus();
                             break;
                         case var value when value == ArticleCreationCheckBox.Name:
                             ArticleCreationNumber.Focus();
@@ -90,16 +90,34 @@ namespace GemueseUndObstSoftware
                             ArticleCreationCheckBox.IsChecked = !ArticleCreationCheckBox.IsChecked;
                             break;
                         case var value when value == ArticleCreationNumber.Name:
-                            ArticleCreationSubmitButton.Command.Execute(null);
+                            if (ArticleCreationSubmitButton.Command.CanExecute(null))
+                            {
+                                ArticleCreationSubmitButton.Command.Execute(null);
+                                ArticleCreationNumber.Focus();
+                            }
                             break;
                         case var value when value == ArticleCreationDescription.Name:
-                            ArticleCreationSubmitButton.Command.Execute(null);
+                            if (ArticleCreationSubmitButton.Command.CanExecute(null))
+                            {
+                                ArticleCreationSubmitButton.Command.Execute(null);
+                                ArticleCreationNumber.Focus();
+                            }
                             break;
                         case var value when value == ArticleCreationPrice.Name:
-                            ArticleCreationSubmitButton.Command.Execute(null);
+                            //we set the focus here because we have onLostFocus as changedetection
+                            ArticleCreationNumber.Focus();
+                            if (ArticleCreationSubmitButton.Command.CanExecute(null))
+                            {
+                                ArticleCreationSubmitButton.Command.Execute(null);
+                                ArticleCreationNumber.Focus();
+                            }
                             break;
                         case var value when value == ArticleCreationQuantityUnit.Name:
-                            ArticleCreationSubmitButton.Command.Execute(null);
+                            if (ArticleCreationSubmitButton.Command.CanExecute(null))
+                            {
+                                ArticleCreationSubmitButton.Command.Execute(null);
+                                ArticleCreationNumber.Focus();
+                            }
                             break;
                     }
                     e.Handled = true;

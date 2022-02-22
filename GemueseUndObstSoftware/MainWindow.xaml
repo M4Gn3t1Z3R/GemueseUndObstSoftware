@@ -18,7 +18,7 @@
             </Style.Triggers>
         </Style>
         <DataTemplate x:Key="ArticleListDisplay">
-            <RadioButton IsChecked="{Binding SelectedForAction}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center" d:DataContext="{d:DesignInstance Type=models:Article, IsDesignTimeCreatable=False}">
+            <RadioButton GroupName="Article" IsChecked="{Binding SelectedForAction}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center" d:DataContext="{d:DesignInstance Type=models:Article, IsDesignTimeCreatable=False}">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
@@ -52,6 +52,7 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         <Button Grid.Row="1" Grid.Column="1" Content="Save All" HorizontalAlignment="Left" VerticalAlignment="Top" Height="25" Width="100" Margin="120,75,0,0" Command="{Binding SaveCommand}"/>
+        <Button Grid.Row="1" Grid.Column="1" Content="Delete Article" HorizontalAlignment="Left" VerticalAlignment="Top" Height="25" Width="100" Margin="120,50,0,0" Command="{Binding DeleteArticleCommand}"/>
         <Label Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" Height="25" Width="100" Margin="0,0,0,0" Content="Quantity"/>
         <TextBox x:Name="BookingQuantityTextBox" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" Height="25" Width="100" BorderBrush="Black" Margin="0,25,0,0" Text="{Binding Quantity}" PreviewKeyDown="Focushandling_KeyDown"/>
         <Button Grid.Row="1" Grid.Column="1" Content="Book in" HorizontalAlignment="Left" VerticalAlignment="Top" Height="25" Width="100" Margin="0,50,0,0" Command="{Binding BookInCommand}"/>
@@ -72,11 +73,11 @@
                 <RowDefinition Height="30"/>
             </Grid.RowDefinitions>
             <Label Grid.Row="0" Grid.Column="0" Content="Articlenumber"/>
-            <TextBox x:Name="ArticleCreationNumber" Grid.Row="0" Grid.Column="1" Text="{Binding Article.ArticleNumber, UpdateSourceTrigger=PropertyChanged}" PreviewKeyDown="Focushandling_KeyDown"/>
+            <TextBox x:Name="ArticleCreationNumber" Grid.Row="0" Grid.Column="1" Text="{Binding Article.ArticleNumber, UpdateSourceTrigger=PropertyChanged}" PreviewKeyDown="Focushandling_KeyDown" ToolTip="The desired articlenumber. If not available, the next higher Number is generated"/>
             <Label Grid.Row="1" Grid.Column="0" Content="Articledescription"/>
-            <TextBox x:Name="ArticleCreationDescription" Grid.Row="1" Grid.Column="1" Text="{Binding Article.ArticleDescription, UpdateSourceTrigger=PropertyChanged}" PreviewKeyDown="Focushandling_KeyDown"/>
+            <TextBox x:Name="ArticleCreationDescription" Grid.Row="1" Grid.Column="1" Text="{Binding Article.ArticleDescription, UpdateSourceTrigger=PropertyChanged}" PreviewKeyDown="Focushandling_KeyDown" ToolTip="Various Article Information, like name etc."/>
             <Label Grid.Row="2" Grid.Column="0" Content="Price"/>
-            <TextBox x:Name="ArticleCreationPrice" Grid.Row="2" Grid.Column="1" Text="{Binding Article.Price, UpdateSourceTrigger=PropertyChanged}" PreviewKeyDown="Focushandling_KeyDown"/>
+            <TextBox x:Name="ArticleCreationPrice" Grid.Row="2" Grid.Column="1" Text="{Binding Article.Price, UpdateSourceTrigger=LostFocus}" PreviewKeyDown="Focushandling_KeyDown" ToolTip="The Price, must not be higher than 0"/>
             <Label Grid.Row="3" Grid.Column="0" Content="Quantityunit"/>
             <ComboBox Name="ArticleCreationQuantityUnit" Grid.Row="3" Grid.Column="1" ItemsSource="{Binding QuantityUnits}" SelectedItem="{Binding Article.QuantityUnit}" PreviewKeyDown="Focushandling_KeyDown"/>
             <Button x:Name="ArticleCreationSubmitButton" Grid.Row="5" Grid.Column="0" Command="{Binding SaveArticleCommand}" Content="Create Article"/>

@@ -27,7 +27,15 @@ namespace GemueseUndObstSoftware.Models
         {
             try
             {
-                Articles.Where(a => a.ArticleNumber == articleNumber).Single().StorageQuantity += quantity;
+                Article article = Articles.Where(a => a.ArticleNumber == articleNumber).Single();
+                if(article.StorageQuantity > quantity)
+                {
+                    article.StorageQuantity -= quantity;
+                }
+                else
+                {
+                    article.StorageQuantity = 0;
+                }
             }
             catch(Exception e)
             {
@@ -39,7 +47,7 @@ namespace GemueseUndObstSoftware.Models
         {
             try
             {
-                Articles.Where(a => a.ArticleNumber == articleNumber).Single().StorageQuantity -= quantity;
+                Articles.Where(a => a.ArticleNumber == articleNumber).Single().StorageQuantity += quantity;
             }
             catch(Exception e)
             {
