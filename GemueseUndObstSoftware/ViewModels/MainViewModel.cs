@@ -40,6 +40,13 @@ namespace GemueseUndObstSoftware.ViewModels
             set { SetProperty(ref _quantityUnits, value); }
         }
 
+        private ObservableCollection<Article> _filteredArticles;
+        public ObservableCollection<Article> FilteredArticles
+        {
+            get { return _filteredArticles; }
+            set { SetProperty(ref _filteredArticles, value); }
+        }
+
         private decimal _quantity;
         public decimal Quantity
         {
@@ -52,6 +59,24 @@ namespace GemueseUndObstSoftware.ViewModels
         {
             get { return _isArticleCreationEnabled; }
             set { SetProperty(ref _isArticleCreationEnabled, value); }
+        }
+
+        private string _searchQuery;
+        public string SearchQuery
+        {
+            get { return _searchQuery; }
+            set 
+            {
+                SetProperty(ref _searchQuery, value);
+                if (string.IsNullOrWhiteSpace(SearchQuery))
+                {
+                    FilteredArticles = Storage.Articles;
+                }
+                else
+                {
+                    FilteredArticles = new ObservableCollection<Article>(Storage.Articles.Where(a => typeof(Article).GetProperties().Where(p => p.GetValue(a).ToString().Contains(SearchQuery)).Any()).OrderBy(a => a.ArticleNumber));
+                }
+            }
         }
 
         public MainViewModel()
@@ -187,6 +212,7 @@ namespace GemueseUndObstSoftware.ViewModels
                     }
                 }
                 Storage.Articles = new ObservableCollection<Article>(Storage.Articles.OrderBy(a => a.ArticleNumber));
+                SearchQuery = "";//we set this to trigger the search and initialize the filtered list
                 return true;
             }
             Directory.CreateDirectory(ArticleDataLocation);
