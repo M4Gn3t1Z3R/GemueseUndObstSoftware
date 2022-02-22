@@ -84,6 +84,13 @@ namespace GemueseUndObstSoftware.ViewModels
             }
         }
 
+        private bool _autoSave = true;
+        public bool AutoSave
+        {
+            get { return _autoSave; }
+            set { SetProperty(ref _autoSave, value); }
+        }
+
         private decimal _newPrice;
         public decimal NewPrice
         {
@@ -109,25 +116,33 @@ namespace GemueseUndObstSoftware.ViewModels
         {
             SaveCommand = new RelayCommand<object>(c => SaveAll());
             LoadCommand = new RelayCommand<object>(c => Load());
-            BookInCommand = new RelayCommand<object>((object par) => { BookInExecute(Storage.Articles.Where(a => a.SelectedForAction).First()); }, c => Storage.Articles.Where(a => a.SelectedForAction).Any());
-            BookOutCommand = new RelayCommand<object>((object par) => { BookOutExecute(Storage.Articles.Where(a => a.SelectedForAction).First()); }, c => Storage.Articles.Where(a => a.SelectedForAction).Any());
+            BookInCommand = new RelayCommand<object>((object par) => { BookInExecute(); }, c => Storage.Articles.Where(a => a.SelectedForAction).Any());
+            BookOutCommand = new RelayCommand<object>((object par) => { BookOutExecute(); }, c => Storage.Articles.Where(a => a.SelectedForAction).Any());
             ChangePriceCommand = new RelayCommand<object>((object par) => { ChangePriceExecute(); }, c => Storage.Articles.Where(a => a.SelectedForAction).Any());
             SaveArticleCommand = new RelayCommand<object>((object par) => { CreateNewArticleExecute(); }, c => Article.IsValid);
             DeleteArticleCommand = new RelayCommand<object>((object par) => { DeleteArticleExecute(); }, c => Storage.Articles.Where(a => a.SelectedForAction).Any());
         }
 
-        private void BookInExecute(Article article)
+        private void BookInExecute()
         {
+            Article article = Storage.Articles.Where(a => a.SelectedForAction).First();
             Storage.BookIn(Quantity, article.ArticleNumber);
             Quantity = 0m;
+            if (AutoSave)
+                SaveArticle(article);
+            SearchQuery = SearchQuery;
         }
 
-        private void BookOutExecute(Article article)
+        private void BookOutExecute()
         {
+            Article article = Storage.Articles.Where(a => a.SelectedForAction).First();
             if(article.StorageQuantity >= Quantity || MessageBox.Show("Not enough in stock, book the remaining quantity instead?", "Warning", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
             {
                 Storage.BookOut(Quantity, article.ArticleNumber);
                 Quantity = 0m;
+                if (AutoSave)
+                    SaveArticle(article);
+                SearchQuery = SearchQuery;
             }
         }
 
@@ -135,6 +150,9 @@ namespace GemueseUndObstSoftware.ViewModels
         {
             Article article = Storage.Articles.Where(a => a.SelectedForAction).First();
             Storage.ChangePrice(article.ArticleNumber, NewPrice);
+            if (AutoSave)
+                SaveArticle(article);
+            SearchQuery = SearchQuery;
         }
 
         private void CreateNewArticleExecute()
@@ -152,7 +170,10 @@ namespace GemueseUndObstSoftware.ViewModels
                 }
             }
             Storage.CreateArticle(Article);
+            if(AutoSave)
+                SaveArticle(Article);
             Article = new Article();
+            SearchQuery = SearchQuery;
         }
 
         private void DeleteArticleExecute()
@@ -162,6 +183,7 @@ namespace GemueseUndObstSoftware.ViewModels
                 Article article = Storage.Articles.Where(a => a.SelectedForAction).First();
                 Storage.DeleteArticle(article.ArticleNumber);
                 File.Delete(Path.Combine(ArticleDataLocation, article.ArticleNumber.ToString() + ".article"));
+                SearchQuery = SearchQuery;
             }
         }
 

@@ -1,4 +1,5 @@
 ﻿using GemueseUndObstSoftware.ViewModels;
+using GemueseUndObstSoftware.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,16 +24,17 @@ namespace GemueseUndObstSoftware
     {
         public MainWindow()
         {
+            this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
             InitializeComponent();
             this.DataContext = new MainViewModel();
         }
 
         private void Focushandling_KeyDown(object sender, KeyEventArgs e)
         {
-            if(sender is Control)
+            if (sender is Control)
             {
                 var x = sender as Control;
-                if(e.Key == Key.Up)
+                if (e.Key == Key.Up)
                 {
                     e.Handled = true;
                     switch (x.Name)
@@ -60,7 +62,7 @@ namespace GemueseUndObstSoftware
                             break;
                     }
                 }
-                else if(e.Key == Key.Down)
+                else if (e.Key == Key.Down)
                 {
                     e.Handled = true;
                     switch (x.Name)
@@ -88,11 +90,26 @@ namespace GemueseUndObstSoftware
                             break;
                     }
                 }
-                else if(e.Key == Key.Enter)
+                else if (e.Key == Key.Enter)
                 {
                     e.Handled = true;
                     switch (x.Name)
                     {
+                        case var value when value == BookingQuantityTextBox.Name:
+                            if(Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift) || Keyboard.IsKeyDown(Key.LeftAlt))
+                            {
+                                BookOutButton.Focus();
+                                if (BookOutButton.Command.CanExecute(null))
+                                    BookOutButton.Command.Execute(null);
+                            }
+                            else
+                            {
+                                BookInButton.Focus();
+                                if (BookInButton.Command.CanExecute(null))
+                                    BookInButton.Command.Execute(null);
+                            }
+                            BookingQuantityTextBox.Focus();
+                            break;
                         case var value when value == ArticleCreationCheckBox.Name:
                             ArticleCreationCheckBox.IsChecked = !ArticleCreationCheckBox.IsChecked;
                             break;
@@ -132,6 +149,26 @@ namespace GemueseUndObstSoftware
                             {
                                 ChangePriceButton.Command.Execute(null);
                             }
+                            break;
+                        case var value when value == ArticleSelectionList.Name:
+                            var lView = x as ListView;
+                            (lView.SelectedItem as Article).SelectedForAction = true;
+                            break;
+                        default:
+                            e.Handled = false;
+                            break;
+                    }
+                }
+                else if(e.Key == Key.Tab)
+                {
+                    e.Handled = true;
+                    switch (x.Name)
+                    {
+                        case var value when value == ArticleSelectionList.Name:
+                            BookingQuantityTextBox.Focus();
+                            break;
+                        case var value when value == BookingQuantityTextBox.Name:
+                            ArticleSelectionList.Focus();
                             break;
                         default:
                             e.Handled = false;

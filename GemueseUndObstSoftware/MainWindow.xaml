@@ -7,7 +7,7 @@
         xmlns:models="clr-namespace:GemueseUndObstSoftware.Models"
         xmlns:local="clr-namespace:GemueseUndObstSoftware"
         mc:Ignorable="d"
-        Title="Storage Software" Height="1080" Width="1920" d:DataContext="{d:DesignInstance Type=viewModel:MainViewModel, IsDesignTimeCreatable=True}">
+        Title="Storage Software" Height="512" Width="1024" d:DataContext="{d:DesignInstance Type=viewModel:MainViewModel, IsDesignTimeCreatable=True}">
     <Window.Resources>
         <Style x:Key="ArticleCreationIsVisible">
             <Setter Property="Grid.Visibility" Value="Collapsed"/>
@@ -67,18 +67,19 @@
                       Background="Black" 
                       ShowsPreview="True"
                       Width="5"
-                      />        
-        <Button Grid.Row="1" Grid.Column="2" Content="Save All" HorizontalAlignment="Left" VerticalAlignment="Top" Height="25" Width="100" Margin="240,75,0,0" Command="{Binding SaveCommand}"/>
-        <Button Grid.Row="1" Grid.Column="2" Content="Delete Article" HorizontalAlignment="Left" VerticalAlignment="Top" Height="25" Width="100" Margin="240,50,0,0" Command="{Binding DeleteArticleCommand}"/>
-        <Button x:Name="ChangePriceButton" Grid.Row="1" Grid.Column="2" Content="Change Price" HorizontalAlignment="Left" VerticalAlignment="Top" Height="25" Width="100" Margin="120,50,0,0" Command="{Binding ChangePriceCommand}"/>
+                      />
+        <CheckBox Grid.Row="0" Grid.Column="2" Content="Autosave" VerticalAlignment="Center" HorizontalAlignment="Left" IsChecked="{Binding AutoSave}" Margin="5,0,0,0"/>
+        <Button Grid.Row="1" Grid.Column="2" Content="Save All" HorizontalAlignment="Left" VerticalAlignment="Top" Height="25" Width="100" Margin="275,75,0,0" Command="{Binding SaveCommand}"/>
+        <Button Grid.Row="1" Grid.Column="2" Content="Delete Article" HorizontalAlignment="Left" VerticalAlignment="Top" Height="25" Width="100" Margin="275,50,0,0" Command="{Binding DeleteArticleCommand}"/>
+        <Button x:Name="ChangePriceButton" Grid.Row="1" Grid.Column="2" Content="Change Price" HorizontalAlignment="Left" VerticalAlignment="Top" Height="25" Width="100" Margin="155,50,0,0" Command="{Binding ChangePriceCommand}"/>
         <!--<Label Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" Height="25" Width="100" Margin="120,0,0,0" Content="New Price"/>-->
-        <TextBox x:Name="NewPriceTextBox" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Top" Height="25" Width="100" Margin="120,25,0,0" Text="{Binding NewPrice, UpdateSourceTrigger=LostFocus}" ToolTip="Enter the new Price here" PreviewKeyDown="Focushandling_KeyDown"/>
-        <Label Grid.Row="1" Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Top" Height="25" Width="100" Margin="0,0,0,0" Content="Quantity"/>
-        <TextBox x:Name="BookingQuantityTextBox" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Top" Height="25" Width="100" BorderBrush="Black" Margin="0,25,0,0" Text="{Binding Quantity}" PreviewKeyDown="Focushandling_KeyDown"/>
-        <Button Grid.Row="1" Grid.Column="2" Content="Book in" HorizontalAlignment="Left" VerticalAlignment="Top" Height="25" Width="100" Margin="0,50,0,0" Command="{Binding BookInCommand}"/>
-        <Button Grid.Row="1" Grid.Column="2" Content="Book out" HorizontalAlignment="Left" VerticalAlignment="Top" Height="25" Width="100" Margin="0,75,0,0" Command="{Binding BookOutCommand}"/>
+        <TextBox x:Name="NewPriceTextBox" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Top" Height="25" Width="100" Margin="155,25,0,0" Text="{Binding NewPrice, UpdateSourceTrigger=LostFocus}" ToolTip="Enter the new Price here" PreviewKeyDown="Focushandling_KeyDown"/>
+        <Label Grid.Row="1" Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Top" Height="25" Width="130" Margin="5,0,0,0" Content="Quantity"/>
+        <TextBox x:Name="BookingQuantityTextBox" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Top" Height="25" Width="130" BorderBrush="Black" Margin="5,25,0,0" Text="{Binding Quantity}" PreviewKeyDown="Focushandling_KeyDown"/>
+        <Button x:Name="BookInButton" Grid.Row="1" Grid.Column="2" Content="Book in [Enter]" HorizontalAlignment="Left" VerticalAlignment="Top" Height="25" Width="130" Margin="5,50,0,0" Command="{Binding BookInCommand}"/>
+        <Button x:Name="BookOutButton" Grid.Row="1" Grid.Column="2" Content="Book out [Alt + Enter]" HorizontalAlignment="Left" VerticalAlignment="Top" Height="25" Width="130" Margin="5,75,0,0" Command="{Binding BookOutCommand}"/>
         <CheckBox x:Name="ArticleCreationCheckBox" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="5,0,0,5" Content="Create Articles" IsChecked="{Binding IsArticleCreationEnabled}" PreviewKeyDown="Focushandling_KeyDown"/>
-        <ListView Grid.Row="1" Grid.RowSpan="2" ItemTemplate="{DynamicResource ResourceKey=ArticleListDisplay}" ItemsSource="{Binding FilteredArticles}" HorizontalContentAlignment="Stretch"/>
+        <ListView x:Name="ArticleSelectionList" Grid.Row="1" Grid.RowSpan="2" ItemTemplate="{DynamicResource ResourceKey=ArticleListDisplay}" ItemsSource="{Binding FilteredArticles}" HorizontalContentAlignment="Stretch" PreviewKeyDown="Focushandling_KeyDown"/>
         <Grid Grid.Row="2" Grid.Column="2" Style="{DynamicResource ResourceKey=ArticleCreationIsVisible}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="120"/>
@@ -100,7 +101,7 @@
             <TextBox x:Name="ArticleCreationPrice" Grid.Row="2" Grid.Column="1" Text="{Binding Article.Price, UpdateSourceTrigger=LostFocus}" PreviewKeyDown="Focushandling_KeyDown" ToolTip="The Price, must not be higher than 0"/>
             <Label Grid.Row="3" Grid.Column="0" Content="Quantityunit"/>
             <ComboBox Name="ArticleCreationQuantityUnit" Grid.Row="3" Grid.Column="1" ItemsSource="{Binding QuantityUnits}" SelectedItem="{Binding Article.QuantityUnit}" PreviewKeyDown="Focushandling_KeyDown"/>
-            <Button x:Name="ArticleCreationSubmitButton" Grid.Row="5" Grid.Column="0" Command="{Binding SaveArticleCommand}" Content="Create Article"/>
+            <Button x:Name="ArticleCreationSubmitButton" Grid.Row="5" Grid.Column="0" Command="{Binding SaveArticleCommand}" Content="Create Article [Enter]"/>
         </Grid>
     </Grid>
 </Window>
