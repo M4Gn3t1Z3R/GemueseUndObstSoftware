@@ -1,7 +1,6 @@
 ﻿using GemueseUndObstSoftware.Enums;
 using GemueseUndObstSoftware.Models;
 using GemueseUndObstSoftware.MVVM;
-using GemueseUndObstSoftware.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
