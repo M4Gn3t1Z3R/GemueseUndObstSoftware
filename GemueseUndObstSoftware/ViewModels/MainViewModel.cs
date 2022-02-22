@@ -110,7 +110,11 @@ namespace GemueseUndObstSoftware.ViewModels
         private void DeleteArticleExecute()
         {
             if(MessageBox.Show("Are you sure you want to delete this article?", "Warning", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
-                Storage.DeleteArticle(Storage.Articles.Where(a => a.SelectedForAction).First().ArticleNumber);
+            {
+                Article article = Storage.Articles.Where(a => a.SelectedForAction).First();
+                Storage.DeleteArticle(article.ArticleNumber);
+                File.Delete(Path.Combine(ArticleDataLocation, article.ArticleNumber.ToString() + ".article"));
+            }
         }
 
         #region Save and Load
