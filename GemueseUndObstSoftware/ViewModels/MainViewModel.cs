@@ -14,7 +14,7 @@ using System.Windows;
 
 namespace GemueseUndObstSoftware.ViewModels
 {
-    class MainViewModel : ViewModelBase
+    public class MainViewModel : ViewModelBase
     {
         private static readonly string DataLocation = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "GemueseUndObstApplicationData");
         private static readonly string ArticleDataLocation = Path.Combine(DataLocation, "Articles");
