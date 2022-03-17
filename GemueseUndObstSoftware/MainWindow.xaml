@@ -21,7 +21,8 @@
             <RadioButton GroupName="Article" IsChecked="{Binding SelectedForAction}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center" d:DataContext="{d:DesignInstance Type=models:Article, IsDesignTimeCreatable=False}">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="3*"/>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="4*"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
@@ -29,12 +30,12 @@
                         <RowDefinition Height="30"/>
                         <RowDefinition Height="30"/>
                     </Grid.RowDefinitions>
-                    <Label Grid.Row="0" Grid.Column="0" Content="{Binding ArticleNumber}"/>
-                    <TextBlock Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Text="{Binding ArticleDescription}" Margin="25,5,0,0" TextWrapping="Wrap"/>
-                    <Label Grid.Row="0" Grid.Column="1" Content="{Binding Price}" HorizontalAlignment="Right"/>
-                    <Label Grid.Row="0" Grid.Column="2" Content="€" BorderThickness="0,0,0,2" BorderBrush="Black" Width="25" HorizontalAlignment="Left"/>
-                    <Label Grid.Row="1" Grid.Column="1" Content="{Binding StorageQuantity}" HorizontalContentAlignment="Right"/>
-                    <Label Grid.Row="1" Grid.Column="2" Content="{Binding QuantityUnit}"/>
+                    <Label Grid.Row="0" Grid.Column="0" Content="{Binding ArticleNumber}" HorizontalAlignment="Right" HorizontalContentAlignment="Right"/>
+                    <TextBlock Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" Text="{Binding ArticleDescription}" Margin="9,5,0,0" TextWrapping="Wrap" HorizontalAlignment="Left" TextAlignment="Left"/>
+                    <Label Grid.Row="0" Grid.Column="2" Content="{Binding Price}" HorizontalAlignment="Right"/>
+                    <Label Grid.Row="0" Grid.Column="3" Content="€" BorderThickness="0,0,0,2" BorderBrush="Black" Width="25" HorizontalAlignment="Left"/>
+                    <Label Grid.Row="1" Grid.Column="2" Content="{Binding StorageQuantity}" HorizontalContentAlignment="Right"/>
+                    <Label Grid.Row="1" Grid.Column="3" Content="{Binding QuantityUnit}"/>
                     
                 </Grid>
             </RadioButton>
@@ -43,9 +44,9 @@
     </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
+            <ColumnDefinition MinWidth="250"/>
             <ColumnDefinition Width="3"/>
-            <ColumnDefinition/>
+            <ColumnDefinition MinWidth="380"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>

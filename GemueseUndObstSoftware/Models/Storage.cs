@@ -11,7 +11,7 @@ namespace GemueseUndObstSoftware.Models
 {
     public class Storage : GemueseUndObstSoftware.MVVM.ViewModelBase
     {
-        private ObservableCollection<Article> _articles = new ObservableCollection<Article>();
+        private ObservableCollection<Article> _articles = new ObservableCollection<Article>(); //this is only used as a backing field, which is required for MVVM
         public ObservableCollection<Article> Articles
         {
             get { return _articles; }
@@ -109,6 +109,8 @@ namespace GemueseUndObstSoftware.Models
                 throw e;
             }
         }
+
+
         public decimal GetAmountOfArticle(int articleNumber)
         {
             try

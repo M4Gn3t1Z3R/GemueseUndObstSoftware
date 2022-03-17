@@ -10,51 +10,55 @@ namespace GemueseUndObstSoftware.Models
 {
     public class Article : ViewModelBase
     {
-        private int _articleNumber;
+        private int _articleNumber; //this is only used as a backing field, which is required for MVVM
         public int ArticleNumber
         {
             get { return _articleNumber; }
             set { SetProperty(ref _articleNumber, value); }
         }
-        private string _articleDescription;
+        private string _articleDescription;//this is only used as a backing field, which is required for MVVM
         public string ArticleDescription
         {
             get { return _articleDescription; }
             set { SetProperty(ref _articleDescription, value); }
         }
-        private decimal _price;
+        private decimal _price; //this is only used as a backing field, which is required for MVVM
         public decimal Price
         {
             get { return _price; }
             set { SetProperty(ref _price, value); }
         }
-        private decimal _storageQuantity;
+        private decimal _storageQuantity; //this is only used as a backing field, which is required for MVVM
         public decimal StorageQuantity
         {
             get { return _storageQuantity; }
             set { SetProperty(ref _storageQuantity, value); }
         }
-        private QuantityUnit _quantityUnit;
+        private QuantityUnit _quantityUnit; //this is only used as a backing field, which is required for MVVM
         public QuantityUnit QuantityUnit
         {
             get { return _quantityUnit; }
             set { SetProperty(ref _quantityUnit, value); }
         }
-        private bool _selectedForAction;
+        private bool _selectedForAction; //this is only used as a backing field, which is required for MVVM
         public bool SelectedForAction
         {
             get { return _selectedForAction; }
             set { SetProperty(ref _selectedForAction, value); }
         }
 
-        public bool IsValid
-        {
-            get { return !string.IsNullOrWhiteSpace(ArticleDescription) && Price != 0 && ArticleNumber >= 0; }
-        }
         public Article()
         {
             SelectedForAction = false;
+        }
 
+        public Article(int articleNumber, string articleDescription, QuantityUnit quantityUnit, decimal price)
+        {
+            ArticleNumber = articleNumber;
+            ArticleDescription = articleDescription;
+            QuantityUnit = quantityUnit;
+            Price = price;
+            SelectedForAction = false;
         }
         public override string ToString()
         {

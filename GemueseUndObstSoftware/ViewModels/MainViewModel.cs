@@ -119,8 +119,13 @@ namespace GemueseUndObstSoftware.ViewModels
             BookInCommand = new RelayCommand<object>((object par) => { BookInExecute(); }, c => Storage.Articles.Where(a => a.SelectedForAction).Any());
             BookOutCommand = new RelayCommand<object>((object par) => { BookOutExecute(); }, c => Storage.Articles.Where(a => a.SelectedForAction).Any());
             ChangePriceCommand = new RelayCommand<object>((object par) => { ChangePriceExecute(); }, c => Storage.Articles.Where(a => a.SelectedForAction).Any());
-            SaveArticleCommand = new RelayCommand<object>((object par) => { CreateNewArticleExecute(); }, c => Article.IsValid);
+            SaveArticleCommand = new RelayCommand<object>((object par) => { CreateNewArticleExecute(); }, c => IsArticleValid(Article));
             DeleteArticleCommand = new RelayCommand<object>((object par) => { DeleteArticleExecute(); }, c => Storage.Articles.Where(a => a.SelectedForAction).Any());
+        }
+
+        public bool IsArticleValid(Article article)
+        {
+            return !string.IsNullOrWhiteSpace(article.ArticleDescription) && article.Price != 0 && article.ArticleNumber >= 0;
         }
 
         private void BookInExecute()
@@ -216,7 +221,7 @@ namespace GemueseUndObstSoftware.ViewModels
                 File.WriteAllText(Path.Combine(ArticleDataLocation, article.ArticleNumber.ToString() + ".article"), article.ToString(), Encoding.Default);
                 return true;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }
