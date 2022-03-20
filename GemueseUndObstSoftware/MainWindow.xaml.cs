@@ -96,7 +96,7 @@ namespace GemueseUndObstSoftware
                     switch (x.Name)
                     {
                         case var value when value == BookingQuantityTextBox.Name:
-                            if(Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift) || Keyboard.IsKeyDown(Key.LeftAlt))
+                            if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift) || Keyboard.IsKeyDown(Key.LeftAlt))
                             {
                                 BookOutButton.Focus();
                                 if (BookOutButton.Command.CanExecute(null))
@@ -152,14 +152,14 @@ namespace GemueseUndObstSoftware
                             break;
                         case var value when value == ArticleSelectionList.Name:
                             var lView = x as ListView;
-                            (lView.SelectedItem as Article).SelectedForAction = true;
+                            (lView.SelectedItem as ArticleDisplay).SelectedForAction = true;
                             break;
                         default:
                             e.Handled = false;
                             break;
                     }
                 }
-                else if(e.Key == Key.Tab)
+                else if (e.Key == Key.Tab)
                 {
                     e.Handled = true;
                     switch (x.Name)

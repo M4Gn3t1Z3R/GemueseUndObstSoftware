@@ -40,16 +40,10 @@ namespace GemueseUndObstSoftware.Models
             get { return _quantityUnit; }
             set { SetProperty(ref _quantityUnit, value); }
         }
-        private bool _selectedForAction; //this is only used as a backing field, which is required for MVVM
-        public bool SelectedForAction
-        {
-            get { return _selectedForAction; }
-            set { SetProperty(ref _selectedForAction, value); }
-        }
 
         public Article()
         {
-            SelectedForAction = false;
+
         }
 
         public Article(int articleNumber, string articleDescription, QuantityUnit quantityUnit, decimal price)
@@ -58,7 +52,6 @@ namespace GemueseUndObstSoftware.Models
             ArticleDescription = articleDescription;
             QuantityUnit = quantityUnit;
             Price = price;
-            SelectedForAction = false;
         }
         public override string ToString()
         {

@@ -1,18 +1,14 @@
 ﻿using GemueseUndObstSoftware.Enums;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GemueseUndObstSoftware.Models
 {
     public class Storage : GemueseUndObstSoftware.MVVM.ViewModelBase
     {
         private ObservableCollection<Article> _articles = new ObservableCollection<Article>(); //this is only used as a backing field, which is required for MVVM
-        public ObservableCollection<Article> Articles
+        public ObservableCollection<Article> ArticleStock
         {
             get { return _articles; }
             set { SetProperty(ref _articles, value); }
@@ -27,8 +23,8 @@ namespace GemueseUndObstSoftware.Models
         {
             try
             {
-                Article article = Articles.Where(a => a.ArticleNumber == articleNumber).Single();
-                if(article.StorageQuantity > quantity)
+                Article article = ArticleStock.Where(a => a.ArticleNumber == articleNumber).Single();
+                if (article.StorageQuantity > quantity)
                 {
                     article.StorageQuantity -= quantity;
                 }
@@ -37,7 +33,7 @@ namespace GemueseUndObstSoftware.Models
                     article.StorageQuantity = 0;
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 //the result was != 1
                 throw e;
@@ -47,23 +43,19 @@ namespace GemueseUndObstSoftware.Models
         {
             try
             {
-                Articles.Where(a => a.ArticleNumber == articleNumber).Single().StorageQuantity += quantity;
+                ArticleStock.Where(a => a.ArticleNumber == articleNumber).Single().StorageQuantity += quantity;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 //the result was != 1
                 throw e;
             }
         }
-        public void CreateArticle(Article article)//overload for creating new articles from an object
-        {
-            CreateArticle(article.ArticleNumber, article.ArticleDescription, article.QuantityUnit, article.Price);
-        }
         public void CreateArticle(int articleNumber, string articleDesctiption, QuantityUnit quantityUnit, decimal price)
         {
             try
             {
-                if(Articles.Where(a => a.ArticleNumber == articleNumber).Count() == 0)
+                if (ArticleStock.Where(a => a.ArticleNumber == articleNumber).Count() == 0)
                 {
                     Article newArticle = new Article();
                     newArticle.ArticleNumber = articleNumber;
@@ -71,15 +63,15 @@ namespace GemueseUndObstSoftware.Models
                     newArticle.Price = price;
                     newArticle.QuantityUnit = quantityUnit;
                     newArticle.StorageQuantity = 0;
-                    Articles.Add(newArticle);
-                    Articles = new ObservableCollection<Article>(Articles.OrderBy(a => a.ArticleNumber));
+                    ArticleStock.Add(newArticle);
+                    ArticleStock = new ObservableCollection<Article>(ArticleStock.OrderBy(a => a.ArticleNumber));
                 }
                 else
                 {
-                    //articleNumber already exists
+                    //articleNumber already exists, which should not be possible
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 //various exceptions
                 throw e;
@@ -89,9 +81,9 @@ namespace GemueseUndObstSoftware.Models
         {
             try
             {
-                Articles.Where(a => a.ArticleNumber == articleNumber).Single().Price = newPrice;
+                ArticleStock.Where(a => a.ArticleNumber == articleNumber).Single().Price = newPrice;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 //the result was != 1
                 throw e;
@@ -101,7 +93,7 @@ namespace GemueseUndObstSoftware.Models
         {
             try
             {
-                Articles.Remove(Articles.Where(a => a.ArticleNumber == articleNumber).Single());
+                ArticleStock.Remove(ArticleStock.Where(a => a.ArticleNumber == articleNumber).Single());
             }
             catch (Exception e)
             {
@@ -115,9 +107,9 @@ namespace GemueseUndObstSoftware.Models
         {
             try
             {
-                return Articles.Where(a => a.ArticleNumber == articleNumber).Single().StorageQuantity;
+                return ArticleStock.Where(a => a.ArticleNumber == articleNumber).Single().StorageQuantity;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 //the result was != 1
                 throw e;

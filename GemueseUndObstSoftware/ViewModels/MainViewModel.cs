@@ -40,8 +40,8 @@ namespace GemueseUndObstSoftware.ViewModels
             set { SetProperty(ref _quantityUnits, value); }
         }
 
-        private ObservableCollection<Article> _filteredArticles;
-        public ObservableCollection<Article> FilteredArticles
+        private ObservableCollection<ArticleDisplay> _filteredArticles;
+        public ObservableCollection<ArticleDisplay> FilteredArticles
         {
             get { return _filteredArticles; }
             set { SetProperty(ref _filteredArticles, value); }
@@ -65,21 +65,16 @@ namespace GemueseUndObstSoftware.ViewModels
         public string SearchQuery
         {
             get { return _searchQuery; }
-            set 
+            set
             {
                 SetProperty(ref _searchQuery, value);
                 if (string.IsNullOrWhiteSpace(SearchQuery))
                 {
-                    FilteredArticles = new ObservableCollection<Article>(Storage.Articles.OrderBy(a => a.ArticleNumber));
+                    FilteredArticles = new ObservableCollection<ArticleDisplay>(ArticleDisplay.GetAsArticleDisplays(Storage.ArticleStock.OrderBy(a => a.ArticleNumber).ToList()));
                 }
                 else
                 {
-                    FilteredArticles = new ObservableCollection<Article>(Storage.Articles.Where(a => typeof(Article).GetProperties().Where(p => p.GetValue(a).ToString().Contains(SearchQuery)).Any()).OrderBy(a => a.ArticleNumber));
-                    if(!FilteredArticles.Where(a => a.SelectedForAction).Any() && Storage.Articles.Where(a => a.SelectedForAction).Any())
-                    {
-                        //we do this to prevent editing articles that are not currently visible
-                        Storage.Articles.Where(a => a.SelectedForAction).First().SelectedForAction = false;
-                    }
+                    FilteredArticles = new ObservableCollection<ArticleDisplay>(ArticleDisplay.GetAsArticleDisplays(Storage.ArticleStock.Where(a => typeof(Article).GetProperties().Where(p => p.GetValue(a).ToString().Contains(SearchQuery)).Any()).OrderBy(a => a.ArticleNumber).ToList()));
                 }
             }
         }
@@ -116,11 +111,11 @@ namespace GemueseUndObstSoftware.ViewModels
         {
             SaveCommand = new RelayCommand<object>(c => SaveAll());
             LoadCommand = new RelayCommand<object>(c => Load());
-            BookInCommand = new RelayCommand<object>((object par) => { BookInExecute(); }, c => Storage.Articles.Where(a => a.SelectedForAction).Any());
-            BookOutCommand = new RelayCommand<object>((object par) => { BookOutExecute(); }, c => Storage.Articles.Where(a => a.SelectedForAction).Any());
-            ChangePriceCommand = new RelayCommand<object>((object par) => { ChangePriceExecute(); }, c => Storage.Articles.Where(a => a.SelectedForAction).Any());
+            BookInCommand = new RelayCommand<object>((object par) => { BookInExecute(); }, c => this.FilteredArticles.Where(a => a.SelectedForAction).Any());
+            BookOutCommand = new RelayCommand<object>((object par) => { BookOutExecute(); }, c => this.FilteredArticles.Where(a => a.SelectedForAction).Any());
+            ChangePriceCommand = new RelayCommand<object>((object par) => { ChangePriceExecute(); }, c => this.FilteredArticles.Where(a => a.SelectedForAction).Any());
             SaveArticleCommand = new RelayCommand<object>((object par) => { CreateNewArticleExecute(); }, c => IsArticleValid(Article));
-            DeleteArticleCommand = new RelayCommand<object>((object par) => { DeleteArticleExecute(); }, c => Storage.Articles.Where(a => a.SelectedForAction).Any());
+            DeleteArticleCommand = new RelayCommand<object>((object par) => { DeleteArticleExecute(); }, c => this.FilteredArticles.Where(a => a.SelectedForAction).Any());
         }
 
         public bool IsArticleValid(Article article)
@@ -130,7 +125,7 @@ namespace GemueseUndObstSoftware.ViewModels
 
         private void BookInExecute()
         {
-            Article article = Storage.Articles.Where(a => a.SelectedForAction).First();
+            Article article = this.FilteredArticles.Where(a => a.SelectedForAction).First().Article;
             Storage.BookIn(Quantity, article.ArticleNumber);
             Quantity = 0m;
             if (AutoSave)
@@ -140,8 +135,8 @@ namespace GemueseUndObstSoftware.ViewModels
 
         private void BookOutExecute()
         {
-            Article article = Storage.Articles.Where(a => a.SelectedForAction).First();
-            if(article.StorageQuantity >= Quantity || MessageBox.Show("Not enough in stock, book the remaining quantity instead?", "Warning", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+            Article article = this.FilteredArticles.Where(a => a.SelectedForAction).First().Article;
+            if (article.StorageQuantity >= Quantity || MessageBox.Show("Not enough in stock, book the remaining quantity instead?", "Warning", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
             {
                 Storage.BookOut(Quantity, article.ArticleNumber);
                 Quantity = 0m;
@@ -153,7 +148,7 @@ namespace GemueseUndObstSoftware.ViewModels
 
         private void ChangePriceExecute()
         {
-            Article article = Storage.Articles.Where(a => a.SelectedForAction).First();
+            Article article = this.FilteredArticles.Where(a => a.SelectedForAction).First().Article;
             Storage.ChangePrice(article.ArticleNumber, NewPrice);
             if (AutoSave)
                 SaveArticle(article);
@@ -162,20 +157,20 @@ namespace GemueseUndObstSoftware.ViewModels
 
         private void CreateNewArticleExecute()
         {
-            if(Article.ArticleNumber <= 0 || Storage.Articles.Where(a => a.ArticleNumber == Article.ArticleNumber).Any())
+            if (Article.ArticleNumber <= 0 || Storage.ArticleStock.Where(a => a.ArticleNumber == Article.ArticleNumber).Any())
             {
                 //when we create a new article and the chosen articlenumber is already taken, we generate a new one
-                for(int i = (Article.ArticleNumber > 0 ? Article.ArticleNumber : 1); i< int.MaxValue; i++)
+                for (int i = (Article.ArticleNumber > 0 ? Article.ArticleNumber : 1); i < int.MaxValue; i++)
                 {
-                    if(!Storage.Articles.Where(a => a.ArticleNumber == i).Any())
+                    if (!Storage.ArticleStock.Where(a => a.ArticleNumber == i).Any())
                     {
                         Article.ArticleNumber = i;
                         break;
                     }
                 }
             }
-            Storage.CreateArticle(Article);
-            if(AutoSave)
+            Storage.CreateArticle(Article.ArticleNumber, Article.ArticleDescription, Article.QuantityUnit, Article.Price);
+            if (AutoSave)
                 SaveArticle(Article);
             Article = new Article();
             SearchQuery = SearchQuery;
@@ -183,9 +178,9 @@ namespace GemueseUndObstSoftware.ViewModels
 
         private void DeleteArticleExecute()
         {
-            if(MessageBox.Show("Are you sure you want to delete this article?", "Warning", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+            if (MessageBox.Show("Are you sure you want to delete this article?", "Warning", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
             {
-                Article article = Storage.Articles.Where(a => a.SelectedForAction).First();
+                Article article = this.FilteredArticles.Where(a => a.SelectedForAction).First().Article;
                 Storage.DeleteArticle(article.ArticleNumber);
                 File.Delete(Path.Combine(ArticleDataLocation, article.ArticleNumber.ToString() + ".article"));
                 SearchQuery = SearchQuery;
@@ -196,7 +191,7 @@ namespace GemueseUndObstSoftware.ViewModels
         private void SaveAll()
         {
             List<Article> saveIssueList = new List<Article>();
-            foreach(Article article in Storage.Articles)
+            foreach (Article article in Storage.ArticleStock)
             {
                 if (!SaveArticle(article))
                 {
@@ -204,9 +199,9 @@ namespace GemueseUndObstSoftware.ViewModels
                 }
             }
             string errorList = "";
-            foreach(Article article in saveIssueList)
+            foreach (Article article in saveIssueList)
             {
-                errorList += (string.IsNullOrWhiteSpace(errorList) ? "" : "; " ) + article.ArticleNumber.ToString();
+                errorList += (string.IsNullOrWhiteSpace(errorList) ? "" : "; ") + article.ArticleNumber.ToString();
             }
             if (!string.IsNullOrWhiteSpace(errorList))
             {
@@ -238,7 +233,7 @@ namespace GemueseUndObstSoftware.ViewModels
                 {
                     Article loadedArticle = new Article();
 
-                    if (int.TryParse(articleFile.Substring(articleFile.LastIndexOf('\\')+1, articleFile.LastIndexOf('.') - articleFile.LastIndexOf('\\') -1), out int articleNumber))
+                    if (int.TryParse(articleFile.Substring(articleFile.LastIndexOf('\\') + 1, articleFile.LastIndexOf('.') - articleFile.LastIndexOf('\\') - 1), out int articleNumber))
                     {
                         string fileContent = File.ReadAllText(articleFile, Encoding.GetEncoding(1252)).Replace("\\r\\n", "");
                         Match filterResult = filter.Match(fileContent);
@@ -271,10 +266,10 @@ namespace GemueseUndObstSoftware.ViewModels
                                 Debug.WriteLine("Exception occured on loading articles: " + e);
                             }
                         }
-                        Storage.Articles.Add(loadedArticle);
+                        Storage.ArticleStock.Add(loadedArticle);
                     }
                 }
-                Storage.Articles = new ObservableCollection<Article>(Storage.Articles.OrderBy(a => a.ArticleNumber));
+                Storage.ArticleStock = new ObservableCollection<Article>(Storage.ArticleStock.OrderBy(a => a.ArticleNumber));
                 SearchQuery = "";//we set this to trigger the search and initialize the filtered list
                 return true;
             }

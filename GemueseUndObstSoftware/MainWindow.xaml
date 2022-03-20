@@ -30,16 +30,16 @@
                         <RowDefinition Height="30"/>
                         <RowDefinition Height="30"/>
                     </Grid.RowDefinitions>
-                    <Label Grid.Row="0" Grid.Column="0" Content="{Binding ArticleNumber}" HorizontalAlignment="Right" HorizontalContentAlignment="Right"/>
-                    <TextBlock Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" Text="{Binding ArticleDescription}" Margin="9,5,0,0" TextWrapping="Wrap" HorizontalAlignment="Left" TextAlignment="Left"/>
-                    <Label Grid.Row="0" Grid.Column="2" Content="{Binding Price}" HorizontalAlignment="Right"/>
+                    <Label Grid.Row="0" Grid.Column="0" Content="{Binding Article.ArticleNumber}" HorizontalAlignment="Right" HorizontalContentAlignment="Right"/>
+                    <TextBlock Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" Text="{Binding Article.ArticleDescription}" Margin="9,5,0,0" TextWrapping="Wrap" HorizontalAlignment="Left" TextAlignment="Left"/>
+                    <Label Grid.Row="0" Grid.Column="2" Content="{Binding Article.Price}" HorizontalAlignment="Right"/>
                     <Label Grid.Row="0" Grid.Column="3" Content="€" BorderThickness="0,0,0,2" BorderBrush="Black" Width="25" HorizontalAlignment="Left"/>
-                    <Label Grid.Row="1" Grid.Column="2" Content="{Binding StorageQuantity}" HorizontalContentAlignment="Right"/>
-                    <Label Grid.Row="1" Grid.Column="3" Content="{Binding QuantityUnit}"/>
-                    
+                    <Label Grid.Row="1" Grid.Column="2" Content="{Binding Article.StorageQuantity}" HorizontalContentAlignment="Right"/>
+                    <Label Grid.Row="1" Grid.Column="3" Content="{Binding Article.QuantityUnit}"/>
+
                 </Grid>
             </RadioButton>
-            
+
         </DataTemplate>
     </Window.Resources>
     <Grid>
